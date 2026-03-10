@@ -1,0 +1,820 @@
+ <!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tuyển Thành Viên</title>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-soft: #f5deb3;
+      --red-dark: #2b0000;
+      --red-main: #5c0a0a;
+      --red-light: #8b1e1e;
+      --text-light: #fff8ea;
+      --overlay-dark: rgba(10, 0, 0, 0.55);
+      --card-bg: rgba(255, 248, 234, 0.08);
+      --border: rgba(212, 175, 55, 0.45);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Times New Roman", serif;
+      color: var(--text-light);
+      background:
+        linear-gradient(var(--overlay-dark), var(--overlay-dark)),
+        url("./main.jpg") center/cover no-repeat fixed;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==================== NHẠC ==================== */
+    .music-btn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 3000;
+      border: 1px solid var(--border);
+      background: rgba(80, 0, 0, 0.82);
+      color: var(--text-light);
+      padding: 12px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      font-size: 15px;
+      backdrop-filter: blur(8px);
+      transition: transform 0.25s ease;
+    }
+
+    .music-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* ==================== MÀN HÌNH CỬA ==================== */
+    #introDoor {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.25)),
+        url("./cua.jpg") center/cover no-repeat;
+    }
+
+    .door-panel {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      cursor: pointer;
+      background:
+        linear-gradient(rgba(255,255,255,0.06), rgba(0,0,0,0.16)),
+        url("./cua.jpg") center/cover no-repeat,
+        linear-gradient(180deg, var(--red-light), var(--red-dark));
+      border: 4px solid var(--gold);
+      transition: filter 0.3s ease;
+    }
+
+    .door-panel:hover {
+      filter: brightness(1.08);
+    }
+
+    .door-left {
+      left: 0;
+      border-right-width: 2px;
+    }
+
+    .door-right {
+      right: 0;
+      border-left-width: 2px;
+    }
+
+    .door-panel::before,
+    .door-panel::after {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border: 2px solid rgba(245, 222, 179, 0.42);
+      pointer-events: none;
+    }
+
+    .door-panel::after {
+      inset: 56px;
+      border: 1px solid rgba(245, 222, 179, 0.3);
+    }
+
+    .door-pattern {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(212,175,55,0.18) 2px, transparent 2px) 0 0 / 36px 36px,
+        linear-gradient(rgba(212,175,55,0.08) 1px, transparent 1px) 0 0 / 70px 70px,
+        linear-gradient(90deg, rgba(212,175,55,0.08) 1px, transparent 1px) 0 0 / 70px 70px;
+      opacity: 0.58;
+      pointer-events: none;
+    }
+
+    .door-ring {
+      position: absolute;
+      top: 50%;
+      width: 28px;
+      height: 28px;
+      margin-top: -14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff3c4, #bb8a20 75%);
+      box-shadow: 0 0 12px rgba(212,175,55,0.55);
+      pointer-events: none;
+    }
+
+    .door-left .door-ring {
+      right: 18px;
+    }
+
+    .door-right .door-ring {
+      left: 18px;
+    }
+
+    .intro-center {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .intro-logo {
+      width: min(180px, 36vw);
+      height: min(180px, 36vw);
+      object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(255, 231, 163, 0.28));
+      animation: logoGlow 1.8s ease-in-out infinite alternate;
+    }
+
+    .intro-title {
+      margin-top: 16px;
+      font-size: clamp(24px, 4vw, 52px);
+      color: var(--gold-soft);
+      letter-spacing: 2px;
+      text-shadow: 0 0 14px rgba(212, 175, 55, 0.35);
+    }
+
+    .intro-sub {
+      margin-top: 14px;
+      font-size: clamp(15px, 1.8vw, 21px);
+      color: #fff0c7;
+      opacity: 0.95;
+    }
+
+    @keyframes logoGlow {
+      from { transform: scale(1); opacity: 0.92; }
+      to { transform: scale(1.04); opacity: 1; }
+    }
+
+    #introDoor.open .door-left {
+      animation: openLeft 1.7s ease forwards;
+    }
+
+    #introDoor.open .door-right {
+      animation: openRight 1.7s ease forwards;
+    }
+
+    @keyframes openLeft {
+      from { transform: translateX(0); }
+      to { transform: translateX(-103%); }
+    }
+
+    @keyframes openRight {
+      from { transform: translateX(0); }
+      to { transform: translateX(103%); }
+    }
+
+    /* ==================== HEADER ==================== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: linear-gradient(to bottom, rgba(35,0,0,0.88), rgba(35,0,0,0.54));
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 98px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 18px;
+    }
+
+    .site-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+
+    /* ==================== TRANG CHỦ ==================== */
+    .page {
+      width: 100%;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 38px 18px 28px;
+    }
+
+    .intro-box {
+      background: rgba(20, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero h1 {
+      text-align: center;
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 52px);
+      color: var(--gold-soft);
+      letter-spacing: 1.5px;
+    }
+
+    .hero .subtitle {
+      text-align: center;
+      font-size: clamp(16px, 2vw, 24px);
+      margin-bottom: 20px;
+      color: #ffefc9;
+    }
+
+    .hero .desc {
+      max-width: 920px;
+      margin: 0 auto;
+      line-height: 1.9;
+      font-size: clamp(17px, 1.5vw, 21px);
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    .section-title {
+      text-align: center;
+      color: var(--gold-soft);
+      margin: 36px 0 20px;
+      font-size: clamp(24px, 3vw, 40px);
+    }
+
+    .character-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 18px 34px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .character-card {
+      position: relative;
+      min-height: 320px;
+      border-radius: 26px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: var(--card-bg);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .character-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.42);
+    }
+
+    .character-card img {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .character-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.08) 58%);
+      display: flex;
+      align-items: end;
+      padding: 22px;
+    }
+
+    .character-info h3 {
+      margin: 0 0 6px;
+      font-size: clamp(24px, 2.1vw, 34px);
+      color: #fff5d0;
+    }
+
+    .character-info p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: #f8ead1;
+    }
+
+    .apply-box {
+      max-width: 920px;
+      margin: 0 auto 52px;
+      padding: 0 18px;
+    }
+
+    .apply-inner {
+      background: rgba(20, 0, 0, 0.52);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .apply-inner h2 {
+      margin-top: 0;
+      color: var(--gold-soft);
+    }
+
+    .apply-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 15px 28px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #c28a1f, #e4c372);
+      color: #3a1200;
+      font-weight: bold;
+      font-size: 18px;
+      transition: transform 0.25s ease;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+    }
+
+    .apply-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    /* ==================== TRANG CHI TIẾT ==================== */
+    #detailPage {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(12, 0, 0, 0.74), rgba(12, 0, 0, 0.74)),
+        url("./bg.jpg") center/cover no-repeat fixed;
+    }
+
+    .detail-topbar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 18px 0;
+      position: relative;
+      min-height: 84px;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 18px;
+      top: 22px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(90, 0, 0, 0.78);
+      color: var(--text-light);
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateX(-3px);
+    }
+
+    .detail-logo-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .detail-logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .detail-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 12px 18px 60px;
+    }
+
+    .detail-box {
+      background: rgba(20, 0, 0, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      backdrop-filter: blur(10px);
+    }
+
+    .detail-banner {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 1px solid rgba(245,222,179,0.2);
+      margin-bottom: 22px;
+      display: block;
+    }
+
+    .detail-title {
+      text-align: center;
+      color: var(--gold-soft);
+      margin: 8px 0 18px;
+      font-size: clamp(28px, 4vw, 46px);
+    }
+
+    .detail-content {
+      font-size: clamp(17px, 1.5vw, 21px);
+      line-height: 1.95;
+      white-space: pre-line;
+    }
+
+    .detail-actions {
+      margin-top: 26px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .outline-btn {
+      display: inline-block;
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-light);
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 820px) {
+      .character-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-box,
+      .intro-box,
+      .apply-inner {
+        padding: 20px;
+      }
+
+      .back-btn {
+        width: 46px;
+        height: 46px;
+        font-size: 24px;
+      }
+
+      .character-card,
+      .character-card img {
+        min-height: 260px;
+      }
+
+      .site-logo {
+        width: 72px;
+        height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NHẠC NỀN -->
+  <audio id="bgMusic" loop>
+    <source src="./Luu_Thuy_-_Kim_Tien_-_Xuan_Phong_-_Long_Ho.mp3" type="audio/mpeg" />
+  </audio>
+  <button class="music-btn" id="musicToggle">🎵 Bật nhạc</button>
+
+  <!-- MÀN HÌNH CỬA -->
+  <div id="introDoor">
+    <div class="door-panel door-left">
+      <div class="door-pattern"></div>
+      <div class="door-ring"></div>
+    </div>
+
+    <div class="door-panel door-right">
+      <div class="door-pattern"></div>
+      <div class="door-ring"></div>
+    </div>
+
+    <div class="intro-center">
+      <img class="intro-logo" src="./logo1.jpg" alt="Logo câu lạc bộ" />
+      <div class="intro-sub">Chạm vào cánh cửa để bước vào</div>
+    </div>
+  </div>
+
+  <!-- TRANG CHỦ -->
+  <div id="homePage" class="page">
+    <header class="site-header">
+      <div class="header-inner">
+        <img class="site-logo" src="./logo1.jpg" alt="Logo CLB" />
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="intro-box">
+        <h1>Tuyển Thành Viên Câu Lạc Bộ</h1>
+        <div class="subtitle">Câu lạc bộ Văn hoá Việt Nam – Chủ đề Nhã nhạc cung đình Huế</div>
+        <div class="desc" id="clubIntro">
+Chúng mình luôn tự hào rằng Văn hóa Việt Nam là một gia đình - nơi
+mọi người không chỉ được học hỏi, trải nghiệm và gặp gỡ. Đây còn là
+nơi ai cũng có thể thoải mái chia sẻ tâm sự cũng như đem niềm vui cho
+những người xung quanh.
+
+Từ lứa THCS đến hết THPT, chúng mình đều nhận đơn ứng tuyển không
+phân biệt độ tuổi. Bạn chỉ cần cho chúng mình nhận ra được tiềm năng
+và nhiệt huyết trong công việc, bạn sẽ có khả năng trở thành một thành viên
+của Câu lạc bộ.
+
+Đây chính là nơi để các bạn trẻ yêu văn hóa có cơ hội học hỏi, trải nghiệm,
+sáng tạo, cùng nhau tổ chức hoạt động và phát triển kỹ năng trong một môi trường giàu bản sắc dân tộc.
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">Chọn Ban Phù Hợp Với Bạn</h2>
+
+    <section class="character-grid">
+      <div class="character-card" onclick="openDepartment('ngu-cung')">
+        <img src="./nv1.jpg" alt="Ngũ Cung" />
+        <div class="character-overlay">
+          <div class="character-info">
+            <h3>Ngũ Cung</h3>
+            <p>Xây dựng nội dung, ý tưởng và thông điệp cho các hoạt động của CLB.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="character-card" onclick="openDepartment('nhac-cong')">
+        <img src="./nv2.jpg" alt="Nhạc Công" />
+        <div class="character-overlay">
+          <div class="character-info">
+            <h3>Nhạc Công</h3>
+            <p>Thiết kế, quay dựng và lan tỏa hình ảnh CLB đến cộng đồng.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="character-card" onclick="openDepartment('nha-hat')">
+        <img src="./nhahat.jpg" alt="Nhà Hát" />
+        <div class="character-overlay">
+          <div class="character-info">
+            <h3>Nhà Hát</h3>
+            <p>Quản lý, kết nối và điều phối các nhân sự trong CLB.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="character-card" onclick="openDepartment('nhac-cu')">
+        <img src="./nv3.jpg" alt="Nhạc Cụ" />
+        <div class="character-overlay">
+          <div class="character-info">
+            <h3>Nhạc Cụ</h3>
+            <p>Phụ trách chuẩn bị cơ sở vật chất để các hoạt động diễn ra suôn sẻ.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="apply-box">
+      <div class="apply-inner">
+        <h2>Sẵn sàng ứng tuyển?</h2>
+        <p>Nhấn vào nút bên dưới để đăng ký tham gia câu lạc bộ.</p>
+        <a class="apply-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSca41PYw33iMl8nTZD_w5qJAFUKEebCfhpfIulB_DbmxgpIHw/viewform" target="_blank">
+          Ứng tuyển ngay
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- TRANG CHI TIẾT BAN -->
+  <div id="detailPage" class="page hidden">
+    <div class="detail-topbar">
+      <button class="back-btn" onclick="goHome()" aria-label="Quay lại">←</button>
+      <div class="detail-logo-wrap">
+        <img class="detail-logo" src="./logo1.jpg" alt="Logo CLB" />
+      </div>
+    </div>
+
+    <div class="detail-container">
+      <div class="detail-box">
+        <img id="detailBanner" class="detail-banner" src="./nv1.jpg" alt="Ảnh ban" />
+        <h1 id="detailTitle" class="detail-title">Tên ban</h1>
+        <div id="detailContent" class="detail-content"></div>
+
+        <div class="detail-actions">
+          <a class="apply-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSca41PYw33iMl8nTZD_w5qJAFUKEebCfhpfIulB_DbmxgpIHw/viewform" target="_blank">
+            Ứng tuyển ban này
+          </a>
+          <a class="outline-btn" href="#" onclick="goHome(); return false;">Quay lại trang chủ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const departments = {
+      "ngu-cung": {
+        title: "Ngũ Cung",
+        image: "./nv1.jpg",
+        jd: `
+MÔ TẢ CÔNG VIỆC
+● Lên ý tưởng thực hiện các hoạt động, sự kiện của Câu lạc bộ.
+● Lập bản kế hoạch, chuẩn bị các tài liệu cần có cho các hoạt động.
+● Soạn bản dự trù rủi ro cho các sự kiện.
+● Giám sát các hoạt động diễn ra trong suốt sự kiện.
+
+YÊU CẦU
+● Sáng tạo, độc đáo, có trí tưởng tượng phong phú.
+● Có khả năng chọn lọc thông tin chính xác và phù hợp.
+● Có khả năng truyền đạt ý tưởng tốt.
+● Có khả năng xử lý tình huống tốt.
+        `
+      },
+
+      "nhac-cong": {
+        title: "Nhạc Công",
+        image: "./nv2.jpg",
+        jd: `
+MÔ TẢ CÔNG VIỆC MẢNG VIẾT
+● Viết bài đăng có nội dung về văn hóa để đăng trên các phương tiện truyền thông của Câu lạc bộ.
+● Hỗ trợ lên ý tưởng thực hiện các bài đăng, dự án truyền thông của Câu lạc bộ.
+● Phối hợp với mảng Thiết kế để tạo ra các sản phẩm truyền thông ấn tượng và có khả năng lôi kéo người đọc cao.
+
+YÊU CẦU
+● Có khả năng viết lách tốt.
+● Có khả năng tìm kiếm, chọn lọc thông tin và truyền đạt ý tưởng tốt.
+● Đảm bảo đủ thời gian hoàn thành bài viết.
+● Biết nắm bắt các xu hướng thịnh hành.
+
+MÔ TẢ CÔNG VIỆC MẢNG THIẾT KẾ
+● Thiết kế các sản phẩm hình ảnh, video,... để đăng trên các phương tiện truyền thông của Câu lạc bộ và sử dụng cho các đợt hoạt động offline.
+● Hỗ trợ lên ý tưởng các bài đăng, dự án truyền thông của Câu lạc bộ.
+● Phối hợp với mảng Nội dung để tạo ra các sản phẩm truyền thông ấn tượng và có khả năng lôi kéo người đọc cao.
+● Góp phần định hình phong cách hình ảnh và nhận diện thương hiệu của Câu lạc bộ.
+
+YÊU CẦU
+● Có khiếu thẩm mỹ tốt.
+● Biết vẽ và/hoặc sử dụng các phần mềm design, chỉnh sửa ảnh.
+● Biết vẽ máy, AI hoặc Photoshop là một lợi thế.
+● Biết nắm bắt các xu hướng thiết kế thịnh hành.
+● Có máy ảnh, biết chụp ảnh là một điểm cộng.
+        `
+      },
+
+      "nha-hat": {
+        title: "Nhà Hát",
+        image: "./nhahat.jpg",
+        jd: `
+MÔ TẢ CÔNG VIỆC
+● Gắn kết các thành viên trong Câu lạc bộ với nhau, xây dựng trò chơi trong các buổi sinh hoạt.
+● Nhắc nhở, theo dõi tiến độ công việc của các thành viên trong từng ban.
+● Lập kế hoạch bonding và hỗ trợ viết minute các cuộc họp.
+
+YÊU CẦU
+● Có khả năng sắp xếp, nhanh nhẹn và linh hoạt trong việc xử lý tình huống.
+● Biết sử dụng các công cụ của Google, When2meet.
+● Quản lý thời gian và theo dõi tiến độ tốt, thường xuyên.
+● Có khả năng giao tiếp khéo léo.
+        `
+      },
+
+      "nhac-cu": {
+        title: "Nhạc Cụ",
+        image: "./nv3.jpg",
+        jd: `
+MÔ TẢ CÔNG VIỆC
+● Tìm kiếm địa điểm mua và quản lý các vật dụng hậu cần cho các hoạt động, sự kiện của Câu lạc bộ.
+● Quản lý công việc chuẩn bị hậu cần cho các sự kiện, hoạt động của Câu lạc bộ.
+● Tổ chức các hoạt động bonding CLB.
+● Dự đoán trước những rủi ro có thể xảy ra trong các sự kiện và có phương án đề phòng.
+
+YÊU CẦU
+● Có khả năng sắp xếp, nhanh nhẹn và linh hoạt trong xử lý tình huống.
+● Có thể nắm bắt tốt giá cả thị trường và có thể so sánh/cân nhắc giá trị mặt hàng.
+● Luôn có mặt sớm hoặc đúng giờ để chuẩn bị cho những hoạt động.
+● Có tính cẩn thận, tỉ mỉ và nhạy cảm với các chi tiết.
+● Có khả năng hoạt náo, truyền năng lượng tích cực.
+        `
+      }
+    };
+
+    const introDoor = document.getElementById("introDoor");
+    const homePage = document.getElementById("homePage");
+    const detailPage = document.getElementById("detailPage");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailContent = document.getElementById("detailContent");
+    const detailBanner = document.getElementById("detailBanner");
+    const bgMusic = document.getElementById("bgMusic");
+    const musicToggle = document.getElementById("musicToggle");
+    const doors = document.querySelectorAll(".door-panel");
+
+    let musicPlaying = false;
+    let doorOpened = false;
+
+    doors.forEach(door => {
+      door.addEventListener("click", async () => {
+        if (doorOpened) return;
+        doorOpened = true;
+
+        introDoor.classList.add("open");
+
+        try {
+          if (!musicPlaying) {
+            await bgMusic.play();
+            musicPlaying = true;
+            musicToggle.textContent = "⏸ Tắt nhạc";
+          }
+        } catch (err) {
+          // Trình duyệt có thể chặn autoplay
+        }
+
+        setTimeout(() => {
+          introDoor.style.display = "none";
+        }, 1800);
+      });
+    });
+
+    function openDepartment(key) {
+      const item = departments[key];
+      if (!item) return;
+
+      detailTitle.textContent = item.title;
+      detailContent.textContent = item.jd.trim();
+      detailBanner.src = item.image;
+      detailBanner.alt = item.title;
+
+      homePage.classList.add("hidden");
+      detailPage.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goHome() {
+      detailPage.classList.add("hidden");
+      homePage.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function toggleMusic() {
+      try {
+        if (!musicPlaying) {
+          await bgMusic.play();
+          musicPlaying = true;
+          musicToggle.textContent = "⏸ Tắt nhạc";
+        } else {
+          bgMusic.pause();
+          musicPlaying = false;
+          musicToggle.textContent = "🎵 Bật nhạc";
+        }
+      } catch (err) {
+        alert("Trình duyệt đang chặn phát nhạc tự động. Bạn bấm lại nút nhạc một lần nữa nhé.");
+      }
+    }
+
+    musicToggle.addEventListener("click", toggleMusic);
+  </script>
+</body>
+</html>
